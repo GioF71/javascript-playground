@@ -21,7 +21,7 @@ function checkCashRegister(price, cash, cid) {
     // if diff >= unit && some qty for this unit
     if (diff >= curr_unit && current_cid[i][1] > 0) {
       const needed_count = Math.floor(diff / curr_unit);
-      const avail_count = Math.round(current_cid[i][1] / curr_unit);
+      const avail_count = Math.floor(current_cid[i][1] / curr_unit);
       const to_be_drawn_count = Math.min(needed_count, avail_count);
       const amount = to_be_drawn_count * curr_unit;
       current_cid[i][1] = (avail_count - to_be_drawn_count) * curr_unit;
