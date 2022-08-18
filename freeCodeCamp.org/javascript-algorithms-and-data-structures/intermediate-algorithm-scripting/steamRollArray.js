@@ -20,4 +20,4 @@ function steamrollArray(arr) {
 steamrollArray([1, [2], [3, [[4]]]]); //[1, 2, 3, 4]
 steamrollArray([[["a"]], [["b"]]]); //["a", "b"]
 steamrollArray([1, [], [3, [[4]]]]); //[1, 3, 4].
-Passed:steamrollArray([1, {}, [3, [[4]]]]); //[1, {}, 3, 4].
+steamrollArray([1, {}, [3, [[4]]]]); //[1, {}, 3, 4].
