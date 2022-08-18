@@ -1,11 +1,11 @@
 function rot13(str) {
   let result = [];
-  const base = "A".charCodeAt(0);
-  const limit = "Z".charCodeAt(0);
+  const base = 'A'.charCodeAt(0);
+  const limit = 'Z'.charCodeAt(0);
   for (let i = 0; i < str.length; ++i) {
     const curr = str[i];
     let rotated = curr;
-    if (curr >= "A" && curr <= "Z") {
+    if (curr >= 'A' && curr <= 'Z') {
       const curr_asc = str.charCodeAt(i);
       let transformed = curr_asc + 13;
       if (transformed > limit) {
