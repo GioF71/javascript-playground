@@ -1,7 +1,7 @@
 function flatten(arr, result = []) {
   if (Array.isArray(arr)) {
     for (const elem of arr) {
-      //console.log("recuring on element", elem);
+      //console.log("recursing on element", elem);
       flatten(elem, result);
     }
   } else {
