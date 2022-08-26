@@ -6,21 +6,27 @@ function isNumeric(n) {
 }
 
 function addTogether() {
-  console.log("args_len", 
+  /*console.log("args_len", 
     arguments.length, 
     arguments[0], 
-    arguments.length > 1 ? arguments[1] : undefined);
+    arguments.length > 1 ? arguments[1] : undefined);*/
   var a = arguments[0];
-  if (!isNumeric(a)) return undefined;
+  if (!isNumeric(a)) {
+    return undefined;
+  }
   if (arguments.length === 1) {
     return b = (b) => {
-      if (!isNumeric(b)) return undefined;
+      if (!isNumeric(b)) {
+        return undefined;
+      }
       return addTogether(a, b);
     };
   }
   var b = arguments[1];
-  if (!isNumeric(b)) return;
-  return a + arguments[1];
+  if (!isNumeric(b)) {
+    return undefined;
+  }
+  return a + b;
 }
 
 const verify = (left, right) => assertions.assertEquals(left, right);
