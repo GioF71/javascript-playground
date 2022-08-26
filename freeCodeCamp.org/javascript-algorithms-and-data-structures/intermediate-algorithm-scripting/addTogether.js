@@ -5,11 +5,13 @@ function isNumeric(n) {
   return typeof n == "number";
 }
 
+const do_log = true;
+
 function addTogether() {
-  /*console.log("args_len", 
+  if (do_log) console.log("args_len", 
     arguments.length, 
     arguments[0], 
-    arguments.length > 1 ? arguments[1] : undefined);*/
+    arguments.length > 1 ? arguments[1] : undefined);
   var a = arguments[0];
   if (!isNumeric(a)) {
     return undefined;
