@@ -7,11 +7,11 @@ function assertRegexTest(sentence, regex, bool_result = true) {
 
 const default_representer = (x) => { return String(x);};
 
-function assertEquals(
+const assertEquals = (
         left, 
         right, 
-        expected_result, 
-        representer_function = default_representer) {
+        expected_result = true, 
+        representer_function = default_representer) => {
     const message = "Expecting [" + representer_function(left) + "] got [" + representer_function(right) + "]";
     const comp_result = (left == right);
     assert(comp_result === expected_result, message);
