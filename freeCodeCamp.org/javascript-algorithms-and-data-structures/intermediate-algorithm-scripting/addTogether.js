@@ -13,17 +13,13 @@ function addTogether() {
   var a = arguments[0];
   if (!isNumeric(a)) return undefined;
   if (arguments.length === 1) {
-    return function (b) {
-      console.log("return function, trying to add", b);
+    return b = (b) => {
       if (!isNumeric(b)) return undefined;
-      //return a + b;
       return addTogether(a, b);
     };
   }
   var b = arguments[1];
-  //if (toString.call(b) !== "[object Number]") return;
   if (!isNumeric(b)) return;
-  
   return a + arguments[1];
 }
 
