@@ -1,13 +1,34 @@
+const assert = require("assert");
+//const { kMaxLength } = require("buffer");
+
+const STATUS = {
+  OPEN: "OPEN", 
+  CLOSED: "CLOSED",
+  INSUFFICIENT_FUNDS: "INSUFFICIENT_FUNDS"
+}
+
+const MONEY = {
+  PENNY: "PENNY",
+  NICKEL: "NICKEL",
+  DIME: "DIME",
+  QUARTER: "QUARTER",
+  ONE: "ONE",
+  FIVE: "FIVE",
+  TEN: "TEN",
+  TWENTY: "TWENTY",
+  ONE_HUNDRED: "ONE HUNDRED"
+};
+
 const table = [
-  ["PENNY", 0.01],
-  ["NICKEL", 0.05],
-  ["DIME", 0.1],
-  ["QUARTER", 0.25],
-  ["ONE", 1],
-  ["FIVE", 5],
-  ["TEN", 10],
-  ["TWENTY", 20],
-  ["ONE HUNDRED", 100]
+  [MONEY.PENNY, 0.01],
+  [MONEY.NICKEL, 0.05],
+  [MONEY.DIME, 0.1],
+  [MONEY.QUARTER, 0.25],
+  [MONEY.ONE, 1],
+  [MONEY.FIVE, 5],
+  [MONEY.TEN, 10],
+  [MONEY.TWENTY, 20],
+  [MONEY.ONE_HUNDRED, 100]
 ];
 
 function checkCashRegister(price, cash, cid) {
@@ -33,28 +54,65 @@ function checkCashRegister(price, cash, cid) {
   if (diff == 0) {
     // closed?
     const closed = current_cid.every(x => x[1] == 0);
-    result["status"] = closed ? "CLOSED" : "OPEN";
+    result["status"] = closed ? STATUS.CLOSED : STATUS.OPEN;
     result["change"] = closed ? cid : change;
   } else {
-    result["status"] = "INSUFFICIENT_FUNDS";
+    result["status"] = STATUS.INSUFFICIENT_FUNDS;
     result["change"] = [];
   }
   console.log(result);
   return result;
 }
 
-//{status: "OPEN", change: [["QUARTER", 0.5]]}
-checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
+const isDeepEqual = (object1, object2) => {
 
-//{status: "OPEN", change: [["TWENTY", 60], ["TEN", 20], ["FIVE", 15], ["ONE", 1], ["QUARTER", 0.5], ["DIME", 0.2], ["PENNY", 0.04]]}
-checkCashRegister(3.26, 100, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
+  const objKeys1 = Object.keys(object1);
+  const objKeys2 = Object.keys(object2);
 
-//{status: "INSUFFICIENT_FUNDS", change: []}
-checkCashRegister(19.5, 20, [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]);
+  if (objKeys1.length !== objKeys2.length) return false;
 
-//{status: "INSUFFICIENT_FUNDS", change: []}
-checkCashRegister(19.5, 20, [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]);
+  for (var key of objKeys1) {
+    const value1 = object1[key];
+    const value2 = object2[key];
 
-//{status: "CLOSED", change: [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]}
-checkCashRegister(19.5, 20, [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]);
+    const isObjects = isObject(value1) && isObject(value2);
+
+    if ((isObjects && !isDeepEqual(value1, value2)) ||
+      (!isObjects && value1 !== value2)
+    ) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const isObject = (object) => {
+  return object != null && typeof object === "object";
+};
+
+const compare_register = (left, right) => {
+  return isDeepEqual(left, right);
+}
+
+const t1 = {status: STATUS.OPEN, change: [[MONEY.QUARTER, 0.5]]};
+const v1 = checkCashRegister(19.5, 20, [[MONEY.PENNY, 1.01], [MONEY.NICKEL, 2.05], [MONEY.DIME, 3.1], [MONEY.QUARTER, 4.25], [MONEY.ONE, 90], [MONEY.FIVE, 55], [MONEY.TEN, 20], [MONEY.TWENTY, 60], [MONEY.ONE_HUNDRED, 100]]);
+//console.log(t1);
+//console.log(v1);
+assert(compare_register(t1, v1));
+
+const t2 = {status: STATUS.OPEN, change: [[MONEY.TWENTY, 60], [MONEY.TEN, 20], [MONEY.FIVE, 15], [MONEY.ONE, 1], [MONEY.QUARTER, 0.5], [MONEY.DIME, 0.2], ["PENNY", 0.04]]};
+const v2 = checkCashRegister(3.26, 100, [[MONEY.PENNY, 1.01], [MONEY.NICKEL, 2.05], [MONEY.DIME, 3.1], [MONEY.QUARTER, 4.25], [MONEY.ONE, 90], [MONEY.FIVE, 55], [MONEY.TEN, 20], [MONEY.TWENTY, 60], ["MONEY.ONE HUNDRED", 100]]);
+assert(compare_register(t2, v2));
+
+const t3 = {status: STATUS.INSUFFICIENT_FUNDS, change: []};
+const v3 = checkCashRegister(19.5, 20, [[MONEY.PENNY, 0.01], [MONEY.NICKEL, 0], [MONEY.DIME, 0], [MONEY.QUARTER, 0], [MONEY.ONE, 0], [MONEY.FIVE, 0], [MONEY.TEN, 0], [MONEY.TWENTY, 0], [MONEY.ONE_HUNDRED, 0]]);
+assert(compare_register(t3, v3));
+
+const t4 = {status: STATUS.INSUFFICIENT_FUNDS, change: []};
+const v4 = checkCashRegister(19.5, 20, [[MONEY.PENNY, 0.01], [MONEY.NICKEL, 0], [MONEY.DIME, 0], [MONEY.QUARTER, 0], [MONEY.ONE, 1], [MONEY.FIVE, 0], [MONEY.TEN, 0], [MONEY.TWENTY, 0], [MONEY.ONE_HUNDRED, 0]]);
+assert(compare_register(t4, v4));
+
+const t5 = {status: STATUS.CLOSED, change: [[MONEY.PENNY, 0.5], [MONEY.NICKEL, 0], [MONEY.DIME, 0], [MONEY.QUARTER, 0], [MONEY.ONE, 0], [MONEY.FIVE, 0], [MONEY.TEN, 0], [MONEY.TWENTY, 0], [MONEY.ONE_HUNDRED, 0]]};
+const v5 = checkCashRegister(19.5, 20, [[MONEY.PENNY, 0.5], [MONEY.NICKEL, 0], [MONEY.DIME, 0], [MONEY.QUARTER, 0], [MONEY.ONE, 0], [MONEY.FIVE, 0], [MONEY.TEN, 0], [MONEY.TWENTY, 0], [MONEY.ONE_HUNDRED, 0]]);
+assert(compare_register(t5, v5));
 
