@@ -30,40 +30,39 @@ const table = [
   [MONEY.ONE_HUNDRED, 100]
 ];
 
+const multiplier = 100; // lowest value is 0.01
+
 function checkCashRegister(price, cash, cid) {
-  console.log(price, cash, cid);
+  //console.log(price, cash, cid);
   const current_cid = JSON.parse(JSON.stringify(cid)); 
-  let diff = cash - price;
+  let m_diff = Math.round((cash - price) * multiplier);
   let change = [];
   let result = {};
-  for (let i = table.length - 1; diff > 0 && i >= 0; --i) {
+  for (let i = table.length - 1; m_diff > 0 && i >= 0; --i) {
     const curr_unit = table[i][1];
-    // if diff >= unit && some qty for this unit
-    if (diff >= curr_unit && current_cid[i][1] > 0) {
-      const needed_count = Math.floor(diff / curr_unit);
-      const avail_count = Math.floor(current_cid[i][1] / curr_unit);
-      const to_be_drawn_count = Math.min(needed_count, avail_count);
-      const amount = to_be_drawn_count * curr_unit;
-      current_cid[i][1] = (avail_count - to_be_drawn_count) * curr_unit;
-      diff = Math.round((diff - amount) * 100.0) / 100.0;
-      change.push([table[i][0], amount]);
+    const m_curr_unit = multiplier * table[i][1];
+    if (m_diff >= m_curr_unit) {
+      const unit_avail_count = Math.round((multiplier * current_cid[i][1]) / m_curr_unit);
+      if (unit_avail_count > 0) {
+        const m_needed_count = Math.floor(m_diff / m_curr_unit);
+        const drawn = Math.min(m_needed_count, unit_avail_count);
+        const amount = drawn * curr_unit;
+        current_cid[i][1] = (unit_avail_count - drawn) * curr_unit;
+        m_diff -= (m_curr_unit * drawn);
+        change.push([table[i][0], amount]);
+      }
     }
   }
-  // is diff == 0?
-  if (diff == 0) {
-    // closed?
+  // is difference at zero?
+  if (m_diff == 0) {
+    // closed? close if all is at 0
     const closed = current_cid.every(x => x[1] == 0);
-    //result["status"] = closed ? STATUS.CLOSED : STATUS.OPEN;
     result.status = closed ? STATUS.CLOSED : STATUS.OPEN;
-    //result["change"] = closed ? cid : change;
     result.change = closed ? cid : change;
   } else {
-    //result["status"] = STATUS.INSUFFICIENT_FUNDS;
     result.status = STATUS.INSUFFICIENT_FUNDS;
-    //result["change"] = [];
     result.change = [];
   }
-  console.log(result);
   return result;
 }
 
@@ -93,12 +92,10 @@ const compare_register = (left, right) => {
 
 const t1 = {status: STATUS.OPEN, change: [[MONEY.QUARTER, 0.5]]};
 const v1 = checkCashRegister(19.5, 20, [[MONEY.PENNY, 1.01], [MONEY.NICKEL, 2.05], [MONEY.DIME, 3.1], [MONEY.QUARTER, 4.25], [MONEY.ONE, 90], [MONEY.FIVE, 55], [MONEY.TEN, 20], [MONEY.TWENTY, 60], [MONEY.ONE_HUNDRED, 100]]);
-//console.log(t1);
-//console.log(v1);
 assert(compare_register(t1, v1));
 
-const t2 = {status: STATUS.OPEN, change: [[MONEY.TWENTY, 60], [MONEY.TEN, 20], [MONEY.FIVE, 15], [MONEY.ONE, 1], [MONEY.QUARTER, 0.5], [MONEY.DIME, 0.2], ["PENNY", 0.04]]};
-const v2 = checkCashRegister(3.26, 100, [[MONEY.PENNY, 1.01], [MONEY.NICKEL, 2.05], [MONEY.DIME, 3.1], [MONEY.QUARTER, 4.25], [MONEY.ONE, 90], [MONEY.FIVE, 55], [MONEY.TEN, 20], [MONEY.TWENTY, 60], ["MONEY.ONE HUNDRED", 100]]);
+const t2 = {status: STATUS.OPEN, change: [[MONEY.TWENTY, 60], [MONEY.TEN, 20], [MONEY.FIVE, 15], [MONEY.ONE, 1], [MONEY.QUARTER, 0.5], [MONEY.DIME, 0.2], [MONEY.PENNY, 0.04]]};
+const v2 = checkCashRegister(3.26, 100, [[MONEY.PENNY, 1.01], [MONEY.NICKEL, 2.05], [MONEY.DIME, 3.1], [MONEY.QUARTER, 4.25], [MONEY.ONE, 90], [MONEY.FIVE, 55], [MONEY.TEN, 20], [MONEY.TWENTY, 60], [MONEY.ONE_HUNDRED, 100]]);
 assert(compare_register(t2, v2));
 
 const t3 = {status: STATUS.INSUFFICIENT_FUNDS, change: []};
