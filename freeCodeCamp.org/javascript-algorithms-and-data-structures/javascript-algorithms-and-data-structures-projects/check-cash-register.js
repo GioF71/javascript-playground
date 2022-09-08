@@ -33,7 +33,6 @@ const table = [
 const multiplier = 100; // lowest value is 0.01
 
 const amountMultiply = (nativeAmount, order = 2) => {
-  //const strAmount = (nativeAmount * Math.pow(10, order)).toFixed(0);
   const strAmount = (nativeAmount).toFixed(order).replace(".", "");
   return parseInt(strAmount);
 }
