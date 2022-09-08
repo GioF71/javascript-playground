@@ -32,8 +32,9 @@ const table = [
 
 const multiplier = 100; // lowest value is 0.01
 
-const amountMultiply = (nativeAmount, use_multiplier = multiplier) => {
-  const strAmount = (nativeAmount * use_multiplier).toFixed(0);
+const amountMultiply = (nativeAmount, order = 2) => {
+  //const strAmount = (nativeAmount * Math.pow(10, order)).toFixed(0);
+  const strAmount = (nativeAmount).toFixed(order).replace(".", "");
   return parseInt(strAmount);
 }
 
@@ -104,7 +105,7 @@ assert(amountMultiply(10) === 1000);
 assert(amountMultiply(19.5) === 1950);
 assert(amountMultiply(3.26) === 326);
 assert(amountMultiply(3.261) === 326); // wrong input, still works, maybe improperly (?)
-assert(amountMultiply(3.261, 1000) === 3261); // would be a correct input if multiplier === 1000
+assert(amountMultiply(3.261, 3) === 3261); // would be a correct input if multiplier === 1000
 
 const t1 = {status: STATUS.OPEN, change: [[MONEY.QUARTER, 0.5]]};
 const v1 = checkCashRegister(19.5, 20, [[MONEY.PENNY, 1.01], [MONEY.NICKEL, 2.05], [MONEY.DIME, 3.1], [MONEY.QUARTER, 4.25], [MONEY.ONE, 90], [MONEY.FIVE, 55], [MONEY.TEN, 20], [MONEY.TWENTY, 60], [MONEY.ONE_HUNDRED, 100]]);
